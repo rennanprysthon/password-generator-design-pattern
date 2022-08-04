@@ -1,14 +1,26 @@
 package br.com.ifpe.edu.recife.passwordgenerator;
 
 import br.com.ifpe.edu.recife.passwordgenerator.builder.PasswordGeneratorBuilder;
+import br.com.ifpe.edu.recife.passwordgenerator.validations.*;
+import org.w3c.dom.Text;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
 public class PasswordGeneratorApplication extends JFrame {
     private final PasswordGeneratorBuilder passwordGeneratorBuilder;
+    private final PasswordValidation passwordValidation;
     public PasswordGeneratorApplication() {
         this.passwordGeneratorBuilder = new PasswordGeneratorBuilder();
+        this.passwordValidation = PasswordValidation.link(
+            new MinLengthValidation(),
+            new MaxLengthValidation(),
+            new HasNumberValidation()
+        );
     }
 
     private JTextField textField;
@@ -31,9 +43,22 @@ public class PasswordGeneratorApplication extends JFrame {
         menu.setBackground(Color.WHITE);
 
         textField = new JTextField(8);
-        textField.setMaximumSize(
-                new Dimension(Integer.MAX_VALUE, textField.getPreferredSize().height) );
+        textField.setMaximumSize(new Dimension(Integer.MAX_VALUE, textField.getPreferredSize().height));
         textField.setFont(Font.getFont(Font.MONOSPACED));
+        textField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                onTextFieldChange();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {}
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                onTextFieldChange();
+            }
+        });
 
         JButton jButton = new JButton("Gerar");
         jButton.addActionListener((value) -> {
@@ -45,6 +70,15 @@ public class PasswordGeneratorApplication extends JFrame {
         menu.add(jButton);
         menu.setMaximumSize(new Dimension(640, 50));
         return menu;
+    }
+
+    private void onTextFieldChange() {
+        String password = this.textField.getText();
+        try {
+            this.passwordValidation.validate(password);
+        } catch(ValidationError error) {
+            System.out.println(error.getMessage());
+        }
     }
 
     private JPanel getRadioSection() {
@@ -94,5 +128,4 @@ public class PasswordGeneratorApplication extends JFrame {
         PasswordGeneratorApplication app = new PasswordGeneratorApplication();
         app.showScreen();
     }
-
 }
