@@ -51,11 +51,13 @@ public class PasswordGeneratorBuilder {
 
         this.passwordGenerator = new BasePasswordGeneratorDecorator();
 
+        password = shuffle(password);
+
         if (password.length() > this.length) {
             password = password.substring(0, this.length);
         }
 
-        return shuffle(password);
+        return password;
     }
 
     private String shuffle(String password) {
@@ -66,16 +68,5 @@ public class PasswordGeneratorBuilder {
 
     private static int returnLength(int length) {
         return Math.max(length, 5);
-    }
-
-    @Override
-    public String toString() {
-        return "PasswordGeneratorBuilder{" +
-                "passwordGenerator=" + passwordGenerator +
-                ", length=" + length +
-                ", withNumberGenerator=" + withNumberGenerator +
-                ", withCharactersGenerator=" + withCharactersGenerator +
-                ", withSpecialCharactersGenerator=" + withSpecialCharactersGenerator +
-                '}';
     }
 }
