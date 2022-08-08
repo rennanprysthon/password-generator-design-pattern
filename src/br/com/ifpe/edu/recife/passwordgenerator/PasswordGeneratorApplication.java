@@ -42,7 +42,7 @@ public class PasswordGeneratorApplication extends JFrame {
         JPanel menu = new JPanel(new FlowLayout(FlowLayout.CENTER));
         menu.setBackground(Color.WHITE);
 
-        textField = new JTextField(8);
+        textField = new JTextField(16);
         textField.setMaximumSize(new Dimension(Integer.MAX_VALUE, textField.getPreferredSize().height));
         textField.setFont(Font.getFont(Font.MONOSPACED));
         textField.getDocument().addDocumentListener(new DocumentListener() {
@@ -82,32 +82,32 @@ public class PasswordGeneratorApplication extends JFrame {
     }
 
     private JPanel getRadioSection() {
-        JPanel radioSection = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel checkboxSection = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        JRadioButton comCaracteresEspeciaisRadioButton = new JRadioButton("Com caracteres especiais");
+        JCheckBox comCaracteresEspeciaisRadioButton = new JCheckBox("Com caracteres especiais");
         comCaracteresEspeciaisRadioButton.addActionListener((value) -> {
             this.passwordGeneratorBuilder.withSpecialCharactersGenerator(comCaracteresEspeciaisRadioButton.isSelected());
         });
 
-        JRadioButton comCaracteresButton = new JRadioButton("Com caracteres");
+        JCheckBox comCaracteresButton = new JCheckBox("Com caracteres");
         comCaracteresButton.addActionListener((value) -> {
             this.passwordGeneratorBuilder.withCharactersGenerator(comCaracteresButton.isSelected());
         });
 
-        JRadioButton comNumerosButton = new JRadioButton("Com numeros");
+        JCheckBox comNumerosButton = new JCheckBox("Com numeros");
         comNumerosButton.addActionListener((value) -> {
             this.passwordGeneratorBuilder.withNumbersGenerator(comNumerosButton.isSelected());
         });
 
-        radioSection.add(comCaracteresEspeciaisRadioButton);
-        radioSection.add(comCaracteresButton);
-        radioSection.add(comNumerosButton);
-        radioSection.setMaximumSize(new Dimension(640, 50));
-        return radioSection;
+        checkboxSection.add(comCaracteresEspeciaisRadioButton);
+        checkboxSection.add(comCaracteresButton);
+        checkboxSection.add(comNumerosButton);
+        checkboxSection.setMaximumSize(new Dimension(640, 50));
+        return checkboxSection;
     }
 
     private void showScreen() {
-        this.setPreferredSize(new Dimension(618, 726));
+        this.setPreferredSize(new Dimension(618, 300));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -122,6 +122,8 @@ public class PasswordGeneratorApplication extends JFrame {
 
         JPanel radioSection = getRadioSection();
         this.add(radioSection);
+
+        this.pack();
     }
 
     public static void main(String[] args) {
