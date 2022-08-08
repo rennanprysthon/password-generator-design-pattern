@@ -43,6 +43,7 @@ public class PasswordGeneratorApplication extends JFrame {
         menu.setBackground(Color.WHITE);
 
         textField = new JTextField(16);
+        textField.setPreferredSize(new Dimension(250, 20));
         textField.setMaximumSize(new Dimension(Integer.MAX_VALUE, textField.getPreferredSize().height));
         textField.setFont(Font.getFont(Font.MONOSPACED));
         textField.getDocument().addDocumentListener(new DocumentListener() {
@@ -106,6 +107,25 @@ public class PasswordGeneratorApplication extends JFrame {
         return checkboxSection;
     }
 
+
+    private JPanel getSelectSection() {
+        JPanel selectSection = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        String[] ALL_SIZES = { "5", "10", "15", "20", "25" };
+
+        //Create the combo box, select item at index 4.
+        //Indices start at 0, so 4 specifies the pig.
+        JComboBox<String> lengthSelect = new JComboBox<>(ALL_SIZES);
+        lengthSelect.setSelectedIndex(ALL_SIZES.length -1);
+        lengthSelect.addActionListener((event) -> {
+            JComboBox<String> element = (JComboBox<String>) event.getSource();
+            int length = Integer.parseInt((String) element.getSelectedItem());
+            this.passwordGeneratorBuilder.withLength(length);
+        });
+
+        selectSection.add(lengthSelect);
+        return selectSection;
+    }
+
     private void showScreen() {
         this.setPreferredSize(new Dimension(618, 300));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -122,6 +142,9 @@ public class PasswordGeneratorApplication extends JFrame {
 
         JPanel radioSection = getRadioSection();
         this.add(radioSection);
+
+        JPanel selectSection = getSelectSection();
+        this.add(selectSection);
 
         this.pack();
     }
