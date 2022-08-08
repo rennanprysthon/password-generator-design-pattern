@@ -67,15 +67,4 @@ public class PasswordGeneratorBuilder {
     private static int returnLength(int length) {
         return Math.max(length, 5);
     }
-
-    @Override
-    public String toString() {
-        return "PasswordGeneratorBuilder{" +
-                "passwordGenerator=" + passwordGenerator +
-                ", length=" + length +
-                ", withNumberGenerator=" + withNumberGenerator +
-                ", withCharactersGenerator=" + withCharactersGenerator +
-                ", withSpecialCharactersGenerator=" + withSpecialCharactersGenerator +
-                '}';
-    }
 }
