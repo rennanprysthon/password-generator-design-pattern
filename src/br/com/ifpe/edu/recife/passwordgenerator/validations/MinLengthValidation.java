@@ -1,15 +1,23 @@
 package br.com.ifpe.edu.recife.passwordgenerator.validations;
 
-public class MinLengthValidation extends PasswordValidation{
+public class MinLengthValidation implements PasswordValidation{
     private static final int MIN_LENGTH = 5;
     private static final String VALIDATION_ERROR_MESSAGE = "Password should be greater than " + MIN_LENGTH;
+    private PasswordValidation passwordValidation;
+
+    public MinLengthValidation() {}
+    public MinLengthValidation(PasswordValidation passwordValidation) {
+        this.passwordValidation = passwordValidation;
+    }
 
     @Override
-    public boolean validate(String password) {
+    public void validatePasssword(String password) throws ValidationError{
         if (password.length() < MIN_LENGTH) {
             throw new ValidationError(password + VALIDATION_ERROR_MESSAGE);
         }
 
-        return checkNext(password);
+        if (passwordValidation != null) {
+            this.passwordValidation.validatePasssword(password);
+        }
     }
 }

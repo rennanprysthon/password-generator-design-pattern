@@ -16,10 +16,10 @@ public class PasswordGeneratorApplication extends JFrame {
     private final PasswordValidation passwordValidation;
     public PasswordGeneratorApplication() {
         this.passwordGeneratorBuilder = new PasswordGeneratorBuilder();
-        this.passwordValidation = PasswordValidation.link(
-            new MinLengthValidation(),
-            new MaxLengthValidation(),
-            new HasNumberValidation()
+        this.passwordValidation = new MinLengthValidation(
+            new MaxLengthValidation(
+                new HasNumberValidation()
+            )
         );
     }
 
@@ -76,7 +76,7 @@ public class PasswordGeneratorApplication extends JFrame {
     private void onTextFieldChange() {
         String password = this.textField.getText();
         try {
-            this.passwordValidation.validate(password);
+            this.passwordValidation.validatePasssword(password);
         } catch(ValidationError error) {
             System.out.println(error.getMessage());
         }
