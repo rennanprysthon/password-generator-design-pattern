@@ -13,7 +13,7 @@ public class MinLengthValidation implements PasswordValidation{
     @Override
     public void validatePasssword(String password) throws ValidationError{
         if (password.length() < MIN_LENGTH) {
-            throw new ValidationError(password + VALIDATION_ERROR_MESSAGE);
+            throw new ValidationError(VALIDATION_ERROR_MESSAGE);
         }
 
         if (passwordValidation != null) {

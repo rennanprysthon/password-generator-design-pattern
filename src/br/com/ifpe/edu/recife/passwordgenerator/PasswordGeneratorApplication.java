@@ -17,13 +17,12 @@ public class PasswordGeneratorApplication extends JFrame {
     public PasswordGeneratorApplication() {
         this.passwordGeneratorBuilder = new PasswordGeneratorBuilder();
         this.passwordValidation = new MinLengthValidation(
-            new MaxLengthValidation(
-                new HasNumberValidation()
-            )
+            new ShouldHaveTwoOfThemValidation()
         );
     }
 
     private JTextField textField;
+    private JLabel errorText;
 
     private JPanel getHeader() {
         JPanel header = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -77,8 +76,9 @@ public class PasswordGeneratorApplication extends JFrame {
         String password = this.textField.getText();
         try {
             this.passwordValidation.validatePasssword(password);
+            errorText.setText("");
         } catch(ValidationError error) {
-            System.out.println(error.getMessage());
+            errorText.setText(error.getMessage());
         }
     }
 
@@ -125,6 +125,17 @@ public class PasswordGeneratorApplication extends JFrame {
         return selectSection;
     }
 
+
+    private JPanel getErrorSection() {
+        JPanel errorSection = new JPanel(new FlowLayout(FlowLayout.LEADING));
+
+        this.errorText = new JLabel("");
+        this.errorText.setForeground(Color.RED);
+
+        errorSection.add(this.errorText);
+        return errorSection;
+    }
+
     private void showScreen() {
         this.setPreferredSize(new Dimension(618, 300));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -144,6 +155,9 @@ public class PasswordGeneratorApplication extends JFrame {
 
         JPanel selectSection = getSelectSection();
         this.add(selectSection);
+
+        JPanel errorSection = getErrorSection();
+        this.add(errorSection);
 
         this.pack();
     }
