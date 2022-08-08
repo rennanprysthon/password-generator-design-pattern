@@ -112,10 +112,9 @@ public class PasswordGeneratorApplication extends JFrame {
         JPanel selectSection = new JPanel(new FlowLayout(FlowLayout.LEFT));
         String[] ALL_SIZES = { "5", "10", "15", "20", "25" };
 
-        //Create the combo box, select item at index 4.
-        //Indices start at 0, so 4 specifies the pig.
         JComboBox<String> lengthSelect = new JComboBox<>(ALL_SIZES);
-        lengthSelect.setSelectedIndex(ALL_SIZES.length -1);
+
+        lengthSelect.setSelectedIndex(0);
         lengthSelect.addActionListener((event) -> {
             JComboBox<String> element = (JComboBox<String>) event.getSource();
             int length = Integer.parseInt((String) element.getSelectedItem());

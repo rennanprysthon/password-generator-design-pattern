@@ -51,11 +51,13 @@ public class PasswordGeneratorBuilder {
 
         this.passwordGenerator = new BasePasswordGeneratorDecorator();
 
+        password = shuffle(password);
+
         if (password.length() > this.length) {
             password = password.substring(0, this.length);
         }
 
-        return shuffle(password);
+        return password;
     }
 
     private String shuffle(String password) {
