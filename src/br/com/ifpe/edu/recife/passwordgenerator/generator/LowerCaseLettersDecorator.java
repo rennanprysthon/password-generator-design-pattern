@@ -2,9 +2,9 @@ package br.com.ifpe.edu.recife.passwordgenerator.generator;
 
 import java.util.Random;
 
-public class CharactersDecorator extends PasswordGenerator {
+public class LowerCaseLettersDecorator extends PasswordGenerator {
     private final PasswordGenerator passwordGenerator;
-    public CharactersDecorator(PasswordGenerator passwordGenerator) {
+    public LowerCaseLettersDecorator(PasswordGenerator passwordGenerator) {
         this.passwordGenerator = passwordGenerator;
     }
 
