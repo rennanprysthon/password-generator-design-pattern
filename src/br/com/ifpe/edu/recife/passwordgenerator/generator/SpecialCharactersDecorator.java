@@ -3,7 +3,7 @@ package br.com.ifpe.edu.recife.passwordgenerator.generator;
 import java.util.Random;
 
 public class SpecialCharactersDecorator extends PasswordGenerator {
-    private final static String LIST_SPECIAL_CHARACTERES = "/#$@!&%*?";
+    private final static String LIST_SPECIAL_CHARACTERES = "/#$@!&%?";
 
     private final PasswordGenerator passwordGenerator;
     public SpecialCharactersDecorator(PasswordGenerator passwordGenerator) {

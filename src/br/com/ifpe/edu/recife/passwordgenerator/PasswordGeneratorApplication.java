@@ -18,7 +18,11 @@ public class PasswordGeneratorApplication extends JFrame {
     private PasswordGenerator passwordGenerator;
     private JTextField textField;
     private JLabel errorText;
-    
+    private JCheckBox comCaracteresEspeciaisRadioButton;
+    private JCheckBox comLetrasMinusculas;
+    private JCheckBox comNumerosButton;
+    private JCheckBox comLetrasMaisculas;
+
     public PasswordGeneratorApplication() {
         this.passwordGeneratorBuilder = new PasswordGeneratorBuilder();
         this.passwordValidation = new MinLengthValidation(
@@ -71,6 +75,10 @@ public class PasswordGeneratorApplication extends JFrame {
 
         JButton jButton = new JButton("Gerar");
         jButton.addActionListener((value) -> {
+            if (isAllCheckboxUnmarked()) {
+                errorText.setText("Select at least one condition above");
+                return;
+            }
             passwordGeneratorBuilder.addPasswordGenerator(passwordGenerator);
             String password = passwordGeneratorBuilder.generatePassword();
             this.textField.setText(password);
@@ -86,7 +94,7 @@ public class PasswordGeneratorApplication extends JFrame {
         String password = this.textField.getText();
         try {
             this.passwordValidation.validatePasssword(password);
-            errorText.setText("");
+            resetApplication();
         } catch (ValidationError error) {
             errorText.setText(error.getMessage());
         }
@@ -95,22 +103,22 @@ public class PasswordGeneratorApplication extends JFrame {
     private JPanel getRadioSection() {
         JPanel checkboxSection = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        JCheckBox comCaracteresEspeciaisRadioButton = new JCheckBox("Com caracteres especiais");
+        comCaracteresEspeciaisRadioButton = new JCheckBox("Com caracteres especiais");
         comCaracteresEspeciaisRadioButton.addActionListener((value) -> {
             this.passwordGenerator = new SpecialCharactersDecorator(passwordGenerator);
         });
 
-        JCheckBox comLetrasMaisculas = new JCheckBox("Com letras maiusculas");
+        comLetrasMaisculas = new JCheckBox("Com letras maiusculas");
         comLetrasMaisculas.addActionListener((value) -> {
             this.passwordGenerator = new UpperCaseLettersDecorator(passwordGenerator);
         });
 
-        JCheckBox comLetrasMinusculas = new JCheckBox("Com letras minusculas");
+        comLetrasMinusculas = new JCheckBox("Com letras minusculas");
         comLetrasMinusculas.addActionListener((value) -> {
             this.passwordGenerator = new LowerCaseLettersDecorator(passwordGenerator);
         });
 
-        JCheckBox comNumerosButton = new JCheckBox("Com numeros");
+        comNumerosButton = new JCheckBox("Com numeros");
         comNumerosButton.addActionListener((value) -> {
             this.passwordGenerator = new NumbersDecorator(passwordGenerator);
         });
@@ -175,5 +183,32 @@ public class PasswordGeneratorApplication extends JFrame {
         this.add(errorSection);
 
         this.pack();
+    }
+
+    private boolean isAllCheckboxUnmarked() {
+        if (comCaracteresEspeciaisRadioButton.isSelected()) {
+           return false;
+        }
+
+        if (comLetrasMaisculas.isSelected()) {
+            return false;
+        }
+
+
+        if (comLetrasMinusculas.isSelected()) {
+            return false;
+        }
+
+
+        return !comNumerosButton.isSelected();
+    }
+
+    private void resetApplication() {
+        errorText.setText("");
+        comCaracteresEspeciaisRadioButton.setSelected(false);
+        comLetrasMinusculas.setSelected(false);
+        comNumerosButton.setSelected(false);
+        comLetrasMaisculas.setSelected(false);
+        this.passwordGenerator = new BasePasswordGeneratorDecorator();
     }
 }
