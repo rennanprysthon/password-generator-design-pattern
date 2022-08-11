@@ -1,10 +1,7 @@
 package br.com.ifpe.edu.recife.passwordgenerator.builder;
 
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PasswordGeneratorBuilder {
@@ -34,8 +31,7 @@ public class PasswordGeneratorBuilder {
 
         for (int i = 0; i < this.length; i++) {
             for (int x = 0; x < chars.length; x++) {
-                char charVal = chars[x].charAt(0);
-                chars[x] = chars[x].substring(1);
+                char charVal = returnRandomString(chars[x]);
                 sb.append(charVal);
 
                 if (sb.toString().length() == this.length) {
@@ -56,6 +52,11 @@ public class PasswordGeneratorBuilder {
         List<String> letters = Arrays.stream(password.split("")).collect(Collectors.toList());
         Collections.shuffle(letters);
         return letters.stream().reduce("", (prev, next) -> prev + next);
+    }
+
+    private char returnRandomString(String str) {
+        Random random = new Random();
+        return str.charAt(random.nextInt(str.length()));
     }
 
     private static int returnLength(int length) {
