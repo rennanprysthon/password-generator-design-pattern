@@ -6,14 +6,17 @@ import br.com.ifpe.edu.recife.passwordgenerator.strategy.LowerCaseGenerator;
 import br.com.ifpe.edu.recife.passwordgenerator.strategy.NumberGenerator;
 import br.com.ifpe.edu.recife.passwordgenerator.strategy.SpecialGenerator;
 import br.com.ifpe.edu.recife.passwordgenerator.strategy.UppercaseGenerator;
+import br.com.ifpe.edu.recife.passwordgenerator.validations.MinLengthValidation;
+import br.com.ifpe.edu.recife.passwordgenerator.validations.PasswordValidation;
+import br.com.ifpe.edu.recife.passwordgenerator.validations.ShouldHaveTwoOfThemValidation;
+import br.com.ifpe.edu.recife.passwordgenerator.validations.ValidationError;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PasswordGeneratorApplication extends JFrame {
     private static final int WIDTH = 840;
@@ -22,16 +25,21 @@ public class PasswordGeneratorApplication extends JFrame {
 
     private final List<PasswordCondition> passwordConditions;
     private final PasswordGeneratorBuilder passwordGeneratorBuilder;
+    private final PasswordValidation passwordValidation;
     private JTextField passwordInput;
     private JComboBox<String> comboBox;
+    private JLabel warningMessage;
 
     public PasswordGeneratorApplication() {
         this.passwordGeneratorBuilder = new PasswordGeneratorBuilder();
-        passwordConditions = Arrays.asList(
+        this.passwordConditions = Arrays.asList(
             new LowerCaseGenerator("Letras minusculas", PasswordLevel.EASY),
             new NumberGenerator("Numeros", PasswordLevel.EASY),
             new UppercaseGenerator("Letras maiusculas", PasswordLevel.MEDIUM),
             new SpecialGenerator("Caracteres especiais", PasswordLevel.HARD)
+        );
+        this.passwordValidation = new ShouldHaveTwoOfThemValidation(
+            new MinLengthValidation()
         );
     }
 
@@ -57,7 +65,21 @@ public class PasswordGeneratorApplication extends JFrame {
         JPanel buttonSection = getButtonSection();
         this.add(buttonSection);
 
+        JPanel footerSection = getFooterSection();
+        this.add(footerSection);
+
         this.pack();
+    }
+
+    private JPanel getFooterSection() {
+        JPanel footerSection = new JPanel();
+
+        this.warningMessage = new JLabel();
+        this.warningMessage.setForeground(new Color(208, 208, 66));
+
+        footerSection.add(warningMessage);
+
+        return footerSection;
     }
 
     private JPanel getButtonSection() {
@@ -72,7 +94,11 @@ public class PasswordGeneratorApplication extends JFrame {
             }
 
             passwordGeneratorBuilder.addLength(AVAIABLE_SELECT_LENGHTS[this.comboBox.getSelectedIndex()]);
-            passwordInput.setText(passwordGeneratorBuilder.generatePassword());
+
+            String generatedPassword = passwordGeneratorBuilder.generatePassword();
+
+            passwordInput.setText(generatedPassword);
+
             passwordGeneratorBuilder.reset();
         });
         buttonSection.add(button);
@@ -150,6 +176,20 @@ public class PasswordGeneratorApplication extends JFrame {
         return mainSection;
     }
 
+    private void validatePassword() {
+        String password = passwordInput.getText();
+
+        try {
+            this.passwordValidation.validatePasssword(password);
+        } catch (ValidationError validationError) {
+            this.warningMessage.setText(validationError.getMessage());
+        }
+    }
+
+    private void resetWarningMessage() {
+        this.warningMessage.setText("");
+    }
+
     private JPanel getHeader() {
         JPanel headerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
         headerWrapper.setPreferredSize(new Dimension(WIDTH, HEIGHT/ 4));
@@ -161,6 +201,19 @@ public class PasswordGeneratorApplication extends JFrame {
 
         passwordInput = new JTextField();
         passwordInput.setColumns(20);
+        passwordInput.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                validatePassword();
+            }
+            public void removeUpdate(DocumentEvent e) {
+                resetWarningMessage();
+            }
+            public void insertUpdate(DocumentEvent e) {
+                validatePassword();
+            }
+        });
+
+
         header.add(passwordInput);
 
         headerWrapper.add(header);
