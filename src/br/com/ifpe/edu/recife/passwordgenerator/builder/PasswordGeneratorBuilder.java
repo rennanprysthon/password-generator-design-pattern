@@ -19,7 +19,7 @@ public class PasswordGeneratorBuilder {
     }
 
     public PasswordGeneratorBuilder addRule(String rule) {
-        this.rules.add(shuffle(rule));
+        this.rules.add(rule);
         return this;
     }
 
@@ -34,12 +34,12 @@ public class PasswordGeneratorBuilder {
                 sb.append(charVal);
 
                 if (sb.toString().length() == this.length) {
-                    return sb.toString();
+                    return shuffle(sb.toString());
                 }
             }
         }
 
-        return sb.toString();
+        return shuffle(sb.toString());
     }
 
     public void reset() {

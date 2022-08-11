@@ -2,7 +2,7 @@ package br.com.ifpe.edu.recife.passwordgenerator.validations;
 
 public class MinLengthValidation implements PasswordValidation{
     private static final int MIN_LENGTH = 5;
-    private static final String VALIDATION_ERROR_MESSAGE = "Password should be greater than " + MIN_LENGTH;
+    private static final String VALIDATION_ERROR_MESSAGE = "Recomendamos o tamanho da senha ser maior que " + MIN_LENGTH;
     private PasswordValidation passwordValidation;
 
     public MinLengthValidation() {}

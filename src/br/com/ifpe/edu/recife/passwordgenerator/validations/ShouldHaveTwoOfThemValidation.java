@@ -16,7 +16,7 @@ public class ShouldHaveTwoOfThemValidation implements PasswordValidation{
         SPECIAL_CHARACTER_REGEX
     );
 
-    private static final String VALIDATION_ERROR_MESSAGE = "Password should have at least two of conditions above";
+    private static final String VALIDATION_ERROR_MESSAGE = "Recomendamos adicionar mais outra condição ao gerador de senha, para deixa-la mais segura";
     private static final int MIN_CONDITION = 2;
 
     private PasswordValidation passwordValidation;

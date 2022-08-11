@@ -17,7 +17,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class PasswordGeneratorApplication extends JFrame {
     private static final int WIDTH = 840;
