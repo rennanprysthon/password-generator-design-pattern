@@ -1,6 +1,5 @@
 package br.com.ifpe.edu.recife.passwordgenerator.builder;
 
-import br.com.ifpe.edu.recife.passwordgenerator.generator.PasswordGenerator;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -11,8 +10,7 @@ import java.util.stream.Collectors;
 public class PasswordGeneratorBuilder {
     private static final String SPLIT_REGEX = "(?<=\\G.{%d})";
     private int length;
-    private List<String> rules;
-    private PasswordGenerator passwordGenerator;
+    private final List<String> rules;
 
     public PasswordGeneratorBuilder() {
         this.rules = new ArrayList<>();
@@ -24,31 +22,34 @@ public class PasswordGeneratorBuilder {
         return this;
     }
 
-    public PasswordGeneratorBuilder addPasswordGenerator(PasswordGenerator passwordGenerator) {
-        this.passwordGenerator = passwordGenerator;
+    public PasswordGeneratorBuilder addRule(String rule) {
+        this.rules.add(shuffle(rule));
         return this;
     }
 
     public String generatePassword() {
-        String allCharacteres = this.passwordGenerator.generatePassword(this.length);
-        String regex = String.format(SPLIT_REGEX, this.length);
-        String[] elements = allCharacteres.split(regex);
-
         StringBuilder sb = new StringBuilder();
 
+        String[] chars = this.rules.toArray(new String[0]);
+
         for (int i = 0; i < this.length; i++) {
-            for (int x = 0; x < elements.length; x++) {
-                char charVal = elements[x].charAt(0);
-                elements[x] = elements[x].substring(1);
+            for (int x = 0; x < chars.length; x++) {
+                char charVal = chars[x].charAt(0);
+                chars[x] = chars[x].substring(1);
                 sb.append(charVal);
 
                 if (sb.toString().length() == this.length) {
-                    return shuffle(sb.toString());
+                    return sb.toString();
                 }
             }
         }
 
-        return shuffle(sb.toString());
+        return sb.toString();
+    }
+
+    public void reset() {
+        this.rules.clear();
+        this.length = 5;
     }
 
     private String shuffle(String password) {
