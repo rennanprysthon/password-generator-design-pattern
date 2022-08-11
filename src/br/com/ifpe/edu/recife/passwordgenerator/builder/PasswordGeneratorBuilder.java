@@ -5,7 +5,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class PasswordGeneratorBuilder {
-    private static final String SPLIT_REGEX = "(?<=\\G.{%d})";
     private int length;
     private final List<String> rules;
 
