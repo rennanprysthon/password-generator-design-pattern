@@ -17,10 +17,11 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class PasswordGeneratorApplication extends JFrame {
     private static final int WIDTH = 840;
-    private static final int HEIGHT = 300;
+    private static final int HEIGHT = 400;
     private static final Integer[] AVAIABLE_SELECT_LENGHTS = new Integer[] { 5, 10, 15, 20, 25 };
 
     private final List<PasswordCondition> passwordConditions;
@@ -107,8 +108,11 @@ public class PasswordGeneratorApplication extends JFrame {
     }
 
     private JPanel renderCheckboxSection(PasswordManager passwordManager) {
-        JPanel checkboxSection = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        checkboxSection.setPreferredSize(new Dimension(WIDTH / 3, HEIGHT / 2));
+        JPanel checkboxSection = new JPanel(new GridLayout(1 + passwordConditions.size(), 0));
+        checkboxSection.setPreferredSize(new Dimension(WIDTH / 3, HEIGHT));
+
+        JLabel label = new JLabel("Condições da senha");
+        checkboxSection.add(label);
 
         for (PasswordCondition passwordCondition : passwordConditions) {
             passwordManager.addEvent(passwordCondition);
@@ -119,10 +123,10 @@ public class PasswordGeneratorApplication extends JFrame {
     }
 
     private JPanel renderRadioSection(PasswordManager passwordManager) {
-        JPanel radioSection = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        radioSection.setPreferredSize(new Dimension(WIDTH / 3, HEIGHT / 2));
+        JPanel radioSection = new JPanel(new GridLayout(1 + PasswordLevel.values().length, 0));
+        radioSection.setPreferredSize(new Dimension(WIDTH / 3, HEIGHT));
 
-        JLabel title = new JLabel("Nivel da senha");
+        JLabel title = new JLabel("Força da senha");
         radioSection.add(title);
         ButtonGroup group = new ButtonGroup();
 
@@ -143,9 +147,11 @@ public class PasswordGeneratorApplication extends JFrame {
     }
 
     private JPanel renderSelectSection() {
+        JPanel selectSection = new JPanel(new FlowLayout());
+        selectSection.setPreferredSize(new Dimension(WIDTH / 3 , HEIGHT));
 
-        JPanel selectSection = new JPanel();
-        selectSection.setPreferredSize(new Dimension(WIDTH / 3 , HEIGHT / 2));
+        JLabel label = new JLabel("Tamanho da senha");
+        selectSection.add(label);
 
         String[] selectLabels = Arrays.stream(AVAIABLE_SELECT_LENGHTS).map(String::valueOf).toArray(String[]::new);
 
