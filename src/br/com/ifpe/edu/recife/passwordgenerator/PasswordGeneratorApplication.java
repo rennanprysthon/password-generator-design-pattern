@@ -1,143 +1,47 @@
 package br.com.ifpe.edu.recife.passwordgenerator;
 
 import br.com.ifpe.edu.recife.passwordgenerator.builder.PasswordGeneratorBuilder;
-import br.com.ifpe.edu.recife.passwordgenerator.validations.*;
-import org.w3c.dom.Text;
+import br.com.ifpe.edu.recife.passwordgenerator.observer.*;
+import br.com.ifpe.edu.recife.passwordgenerator.strategy.LowerCaseGenerator;
+import br.com.ifpe.edu.recife.passwordgenerator.strategy.NumberGenerator;
+import br.com.ifpe.edu.recife.passwordgenerator.strategy.SpecialGenerator;
+import br.com.ifpe.edu.recife.passwordgenerator.strategy.UppercaseGenerator;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.Arrays;
-import java.util.regex.Pattern;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PasswordGeneratorApplication extends JFrame {
+    private static final int WIDTH = 840;
+    private static final int HEIGHT = 300;
+    private static final Integer[] AVAIABLE_SELECT_LENGHTS = new Integer[] { 5, 10, 15, 20, 25 };
+
+    private final List<PasswordCondition> passwordConditions;
     private final PasswordGeneratorBuilder passwordGeneratorBuilder;
-    private final PasswordValidation passwordValidation;
+    private JTextField passwordInput;
+    private JComboBox<String> comboBox;
+
     public PasswordGeneratorApplication() {
         this.passwordGeneratorBuilder = new PasswordGeneratorBuilder();
-        this.passwordValidation = new MinLengthValidation(
-            new ShouldHaveTwoOfThemValidation()
+        passwordConditions = Arrays.asList(
+            new LowerCaseGenerator("Letras minusculas", PasswordLevel.EASY),
+            new NumberGenerator("Numeros", PasswordLevel.EASY),
+            new UppercaseGenerator("Letras maiusculas", PasswordLevel.MEDIUM),
+            new SpecialGenerator("Caracteres especiais", PasswordLevel.HARD)
         );
     }
 
-    private JTextField textField;
-    private JLabel errorText;
-
-    private JPanel getHeader() {
-        JPanel header = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        header.setBackground(Color.WHITE);
-
-        JLabel title = new JLabel("PasswordGenerator");
-        title.setFont(new Font("Serif", Font.BOLD, 24));
-
-        header.add(title);
-        header.setMaximumSize(new Dimension(640, 150));
-
-        return header;
-    }
-
-    private JPanel getMenu() {
-        JPanel menu = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        menu.setBackground(Color.WHITE);
-
-        textField = new JTextField(16);
-        textField.setPreferredSize(new Dimension(250, 20));
-        textField.setMaximumSize(new Dimension(Integer.MAX_VALUE, textField.getPreferredSize().height));
-        textField.setFont(Font.getFont(Font.MONOSPACED));
-        textField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                onTextFieldChange();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {}
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                onTextFieldChange();
-            }
-        });
-
-        JButton jButton = new JButton("Gerar");
-        jButton.addActionListener((value) -> {
-            String password = passwordGeneratorBuilder.generatePassword();
-            this.textField.setText(password);
-        });
-
-        menu.add(textField);
-        menu.add(jButton);
-        menu.setMaximumSize(new Dimension(640, 50));
-        return menu;
-    }
-
-    private void onTextFieldChange() {
-        String password = this.textField.getText();
-        try {
-            this.passwordValidation.validatePasssword(password);
-            errorText.setText("");
-        } catch(ValidationError error) {
-            errorText.setText(error.getMessage());
-        }
-    }
-
-    private JPanel getRadioSection() {
-        JPanel checkboxSection = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-        JCheckBox comCaracteresEspeciaisRadioButton = new JCheckBox("Com caracteres especiais");
-        comCaracteresEspeciaisRadioButton.addActionListener((value) -> {
-            this.passwordGeneratorBuilder.withSpecialCharactersGenerator(comCaracteresEspeciaisRadioButton.isSelected());
-        });
-
-        JCheckBox comCaracteresButton = new JCheckBox("Com caracteres");
-        comCaracteresButton.addActionListener((value) -> {
-            this.passwordGeneratorBuilder.withCharactersGenerator(comCaracteresButton.isSelected());
-        });
-
-        JCheckBox comNumerosButton = new JCheckBox("Com numeros");
-        comNumerosButton.addActionListener((value) -> {
-            this.passwordGeneratorBuilder.withNumbersGenerator(comNumerosButton.isSelected());
-        });
-
-        checkboxSection.add(comCaracteresEspeciaisRadioButton);
-        checkboxSection.add(comCaracteresButton);
-        checkboxSection.add(comNumerosButton);
-        checkboxSection.setMaximumSize(new Dimension(640, 50));
-        return checkboxSection;
-    }
-
-
-    private JPanel getSelectSection() {
-        JPanel selectSection = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        String[] ALL_SIZES = { "5", "10", "15", "20", "25" };
-
-        JComboBox<String> lengthSelect = new JComboBox<>(ALL_SIZES);
-
-        lengthSelect.setSelectedIndex(0);
-        lengthSelect.addActionListener((event) -> {
-            JComboBox<String> element = (JComboBox<String>) event.getSource();
-            int length = Integer.parseInt((String) element.getSelectedItem());
-            this.passwordGeneratorBuilder.withLength(length);
-        });
-
-        selectSection.add(lengthSelect);
-        return selectSection;
-    }
-
-
-    private JPanel getErrorSection() {
-        JPanel errorSection = new JPanel(new FlowLayout(FlowLayout.LEADING));
-
-        this.errorText = new JLabel("");
-        this.errorText.setForeground(Color.RED);
-
-        errorSection.add(this.errorText);
-        return errorSection;
+    public static void main(String[] args) {
+        PasswordGeneratorApplication app = new PasswordGeneratorApplication();
+        app.showScreen();
     }
 
     private void showScreen() {
-        this.setPreferredSize(new Dimension(618, 300));
+        this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -147,23 +51,120 @@ public class PasswordGeneratorApplication extends JFrame {
         JPanel header = getHeader();
         this.add(header);
 
-        JPanel menu = getMenu();
-        this.add(menu);
+        JPanel mainSection = getMainSection();
+        this.add(mainSection);
 
-        JPanel radioSection = getRadioSection();
-        this.add(radioSection);
-
-        JPanel selectSection = getSelectSection();
-        this.add(selectSection);
-
-        JPanel errorSection = getErrorSection();
-        this.add(errorSection);
+        JPanel buttonSection = getButtonSection();
+        this.add(buttonSection);
 
         this.pack();
     }
 
-    public static void main(String[] args) {
-        PasswordGeneratorApplication app = new PasswordGeneratorApplication();
-        app.showScreen();
+    private JPanel getButtonSection() {
+        JPanel buttonSection = new JPanel();
+
+        JButton button = new JButton("Gerar senha");
+        button.addActionListener((actionListener) -> {
+            for (PasswordCondition passwordCondition : passwordConditions) {
+                if (passwordCondition.isSelected() && passwordCondition.isEnabled()) {
+                    passwordGeneratorBuilder.addRule(passwordCondition.getSequenceStrategy());
+                }
+            }
+
+            passwordGeneratorBuilder.addLength(AVAIABLE_SELECT_LENGHTS[this.comboBox.getSelectedIndex()]);
+            passwordInput.setText(passwordGeneratorBuilder.generatePassword());
+            passwordGeneratorBuilder.reset();
+        });
+        buttonSection.add(button);
+
+        return buttonSection;
+    }
+
+    private JPanel renderCheckboxSection(PasswordManager passwordManager) {
+        JPanel checkboxSection = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        checkboxSection.setPreferredSize(new Dimension(WIDTH / 3, HEIGHT / 2));
+
+        for (PasswordCondition passwordCondition : passwordConditions) {
+            passwordManager.addEvent(passwordCondition);
+            checkboxSection.add(passwordCondition);
+        }
+
+        return checkboxSection;
+    }
+
+    private JPanel renderRadioSection(PasswordManager passwordManager) {
+        JPanel radioSection = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        radioSection.setPreferredSize(new Dimension(WIDTH / 3, HEIGHT / 2));
+
+        JLabel title = new JLabel("Nivel da senha");
+        radioSection.add(title);
+        ButtonGroup group = new ButtonGroup();
+
+        JRadioButton levelButton;
+        for (PasswordLevel value : PasswordLevel.values()) {
+            levelButton = new JRadioButton(value.getLabel());
+
+            levelButton.addActionListener((event) -> {
+                passwordManager.notify(value);
+            });
+
+            group.add(levelButton);
+            radioSection.add(levelButton);
+        }
+
+        group.getElements().nextElement().setSelected(true);
+        return radioSection;
+    }
+
+    private JPanel renderSelectSection() {
+
+        JPanel selectSection = new JPanel();
+        selectSection.setPreferredSize(new Dimension(WIDTH / 3 , HEIGHT / 2));
+
+        String[] selectLabels = Arrays.stream(AVAIABLE_SELECT_LENGHTS).map(String::valueOf).toArray(String[]::new);
+
+        comboBox = new JComboBox<>(selectLabels);
+
+        selectSection.add(comboBox);
+
+        return selectSection;
+    }
+
+    private JPanel getMainSection() {
+        JPanel mainSection = new JPanel(new GridLayout(1, 3));
+        mainSection.setPreferredSize(new Dimension(WIDTH, HEIGHT / 4));
+        mainSection.setBackground(Color.WHITE);
+
+        PasswordManager passwordManager = new PasswordManager();
+
+        JPanel radioSection = renderRadioSection(passwordManager);
+        JPanel checkboxSection = renderCheckboxSection(passwordManager);
+        JPanel selectSection = renderSelectSection();
+
+        mainSection.add(radioSection);
+        mainSection.add(checkboxSection);
+        mainSection.add(selectSection);
+
+        passwordManager.notify(PasswordLevel.EASY);
+
+        return mainSection;
+    }
+
+    private JPanel getHeader() {
+        JPanel headerWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        headerWrapper.setPreferredSize(new Dimension(WIDTH, HEIGHT/ 4));
+        JPanel header = new JPanel(new GridLayout(2, 0));
+
+        header.setPreferredSize(new Dimension(WIDTH - 20, (HEIGHT / 4) - 20));
+        JLabel title = new JLabel("Gerador de senha");
+        header.add(title);
+
+        passwordInput = new JTextField();
+        passwordInput.setColumns(20);
+        header.add(passwordInput);
+
+        headerWrapper.add(header);
+
+        return headerWrapper;
     }
 }

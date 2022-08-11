@@ -1,9 +1,20 @@
 package br.com.ifpe.edu.recife.passwordgenerator.validations;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class ShouldHaveTwoOfThemValidation implements PasswordValidation{
     private static final String NUMBER_REGEX = "(.*)[0-9](.*)";
-    private static final String CHARACTER_REGEX = "(.*)[a-zA-Z](.*)";
-    private static final String SPECIAL_CHARACTER_REGEX = "(.*)[/#$@!&%*?](.*)";
+    private static final String UPPERCASE_REGEX = "(.*)[A-Z](.*)";
+    private static final String LOWERCASE_REGEX = "(.*)[a-z](.*)";
+    private static final String SPECIAL_CHARACTER_REGEX = "(.*)[/#$@!&%?](.*)";
+    private static final List<String> REGEX_LIST = Arrays.asList(
+        NUMBER_REGEX,
+        UPPERCASE_REGEX,
+        UPPERCASE_REGEX,
+        SPECIAL_CHARACTER_REGEX
+    );
 
     private static final String VALIDATION_ERROR_MESSAGE = "Password should have at least two of conditions above";
     private static final int MIN_CONDITION = 2;
@@ -20,7 +31,9 @@ public class ShouldHaveTwoOfThemValidation implements PasswordValidation{
 
         if (password.matches(NUMBER_REGEX))
             quantityOfConditions++;
-        if (password.matches(CHARACTER_REGEX))
+        if (password.matches(UPPERCASE_REGEX))
+            quantityOfConditions++;
+        if (password.matches(LOWERCASE_REGEX))
             quantityOfConditions++;
         if (password.matches(SPECIAL_CHARACTER_REGEX))
             quantityOfConditions++;

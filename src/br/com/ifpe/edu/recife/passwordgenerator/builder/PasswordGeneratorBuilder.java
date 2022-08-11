@@ -1,69 +1,61 @@
 package br.com.ifpe.edu.recife.passwordgenerator.builder;
 
-import br.com.ifpe.edu.recife.passwordgenerator.generator.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PasswordGeneratorBuilder {
-    private PasswordGenerator passwordGenerator;
     private int length;
-    private boolean withNumberGenerator;
-    private boolean withCharactersGenerator;
-    private boolean withSpecialCharactersGenerator;
+    private final List<String> rules;
 
     public PasswordGeneratorBuilder() {
-        this.passwordGenerator = new BasePasswordGeneratorDecorator();
+        this.rules = new ArrayList<>();
         this.length = 5;
     }
 
-    public PasswordGeneratorBuilder withLength(int length) {
+    public PasswordGeneratorBuilder addLength(int length) {
         this.length = returnLength(length);
         return this;
     }
 
-    public PasswordGeneratorBuilder withNumbersGenerator(boolean withNumberGenerator) {
-        this.withNumberGenerator = withNumberGenerator;
-        return this;
-    }
-
-    public PasswordGeneratorBuilder withCharactersGenerator(boolean withCharactersGenerator) {
-        this.withCharactersGenerator = withCharactersGenerator;
-        return this;
-    }
-
-    public PasswordGeneratorBuilder withSpecialCharactersGenerator(boolean withSpecialCharactersGenerator) {
-        this.withSpecialCharactersGenerator = withSpecialCharactersGenerator;
+    public PasswordGeneratorBuilder addRule(String rule) {
+        this.rules.add(shuffle(rule));
         return this;
     }
 
     public String generatePassword() {
-        if (withNumberGenerator)
-            passwordGenerator = new NumbersDecorator(passwordGenerator);
-        if (withSpecialCharactersGenerator)
-            passwordGenerator = new SpecialCharactersDecorator(passwordGenerator);
-        if (withCharactersGenerator)
-            passwordGenerator = new CharactersDecorator(passwordGenerator);
+        StringBuilder sb = new StringBuilder();
 
-        String password = passwordGenerator.generatePassword(this.length);
+        String[] chars = this.rules.toArray(new String[0]);
 
-        this.passwordGenerator = new BasePasswordGeneratorDecorator();
+        for (int i = 0; i < this.length; i++) {
+            for (int x = 0; x < chars.length; x++) {
+                char charVal = returnRandomString(chars[x]);
+                sb.append(charVal);
 
-        password = shuffle(password);
-
-        if (password.length() > this.length) {
-            password = password.substring(0, this.length);
+                if (sb.toString().length() == this.length) {
+                    return sb.toString();
+                }
+            }
         }
 
-        return password;
+        return sb.toString();
+    }
+
+    public void reset() {
+        this.rules.clear();
+        this.length = 5;
     }
 
     private String shuffle(String password) {
         List<String> letters = Arrays.stream(password.split("")).collect(Collectors.toList());
         Collections.shuffle(letters);
         return letters.stream().reduce("", (prev, next) -> prev + next);
+    }
+
+    private char returnRandomString(String str) {
+        Random random = new Random();
+        return str.charAt(random.nextInt(str.length()));
     }
 
     private static int returnLength(int length) {
